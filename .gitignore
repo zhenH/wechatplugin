@@ -1,0 +1,24 @@
+# ===== 环境与敏感信息（绝不提交！）=====
+# .env 含 DeepSeek API Key 和访问密码，任何情况下都不要提交
+.env
+*.env.local
+
+# ===== 数据（聊天记录/用户头像）=====
+chat.db
+*.sqlite3
+*.db
+app/static/avatars/
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.venv/
+.uv-cache/
+
+# ===== 打包产物 =====
+*.tar.gz
+*.zip
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db

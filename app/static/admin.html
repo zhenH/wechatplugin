@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理端 · 多人格群聊</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>⚙️ 管理端</h1>
+    <span id="modeBadge" class="badge">…</span>
+    <span class="spacer"></span>
+    <a href="/">← 回聊天室</a>
+  </header>
+
+  <div class="admin-wrap">
+    <div class="tabs">
+      <button id="tabAgents" class="active">角色橱窗</button>
+      <button id="tabRooms">群组</button>
+      <button id="tabKb">知识库</button>
+      <button id="tabForge">铸造（待确认档案）</button>
+      <button id="tabMonitor">监控</button>
+      <button id="tabSettings">设置</button>
+    </div>
+
+    <div class="admin-body">
+      <!-- Agents 橱窗 -->
+      <section id="panelAgents">
+        <div class="panel" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <h2 style="margin:0">角色橱窗</h2>
+            <span class="hint">点卡片编辑 · 像挑选宠物一样挑选角色</span>
+            <span class="spacer" style="flex:1"></span>
+            <button id="restoreDemoBtn" title="恢复被删掉的示例人格（老王/小晴/阿睿）">♻️ 恢复示例人格</button>
+          </div>
+          <div id="agentWall" class="agent-wall"><div class="empty">加载中…</div></div>
+        </div>
+        <div class="panel">
+          <h2 id="agentFormTitle">新建角色</h2>
+          <input type="hidden" id="agentId">
+          <label>名字（@ 触发）</label>
+          <input id="f_name" placeholder="如：毒舌老王">
+          <label>别名（逗号分隔）</label>
+          <input id="f_aliases" placeholder="如：老王,毒舌">
+          <label>人格提示词（system prompt）</label>
+          <textarea id="f_prompt" rows="7" placeholder="角色设定、语气、价值观、知识边界、禁忌…"></textarea>
+          <label>经历记忆（长期记忆，agent 会在聊天中自己积累，可手改/清空）</label>
+          <textarea id="f_memory" rows="3" placeholder="如：&#10;- 2026-08-19：老王送了我一盒饼干"></textarea>
+          <label>历史版本（人格/记忆快照，支持回滚）</label>
+          <div id="versionList" class="hint">选择角色后显示历史版本</div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button id="rollbackDayBtn" class="danger" style="flex:1">⏪ 回滚到一天前</button>
+          </div>
+          <label>语气风格示例（few-shot，每行一条）</label>
+          <textarea id="f_fewshot" rows="4" placeholder="用户: …&#10;老王: …"></textarea>
+          <label>触发关键词（逗号分隔）</label>
+          <input id="f_keywords" placeholder="如：电影,吐槽,影评">
+          <div class="two-col">
+            <div>
+              <label>话痨度（发言频率 0~1）</label>
+              <input id="f_freq" type="number" step="0.05" min="0" max="1" value="0.3">
+            </div>
+            <div>
+              <label>基础冷却秒 base_cd</label>
+              <input id="f_cd" type="number" step="5" min="1" value="30">
+            </div>
+          </div>
+          <label>发言长度（性格，独立于话痨度）</label>
+          <select id="f_len">
+            <option value="short">短 — 一句话怼完（20 字内，碎嘴子）</option>
+            <option value="normal" selected>中 — 简短自然（50 字内）</option>
+            <option value="long">长 — 展开说透（100 字+，话痨专家）</option>
+          </select>
+          <label>专属模型（留空用全局）</label>
+          <input id="f_model" placeholder="如：gpt-4o-mini / deepseek-chat">
+          <label>头像（图片 URL，或点上传）</label>
+          <div class="row">
+            <input id="f_avatar" placeholder="https://… 或 /avatars/xxx.png">
+            <button id="avatarUploadBtn" style="white-space:nowrap">上传图片</button>
+          </div>
+          <input type="file" id="avatarFile" accept="image/*" style="display:none">
+          <div id="avatarPreview" class="hint" style="margin-top:6px"></div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <button id="saveAgent" class="primary" style="flex:1">保存</button>
+            <button id="resetAgent" style="flex:1">清空</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Rooms -->
+      <section id="panelRooms" style="display:none">
+        <div class="grid">
+          <div class="panel">
+            <h2>全部群组</h2>
+            <div id="roomList"><div class="empty">加载中…</div></div>
+          </div>
+          <div class="panel">
+            <h2>新建 / 编辑群组</h2>
+            <input type="hidden" id="roomId">
+            <label>群名</label>
+            <input id="r_name" placeholder="如：闲聊一号群">
+            <label>启用哪些 Agent</label>
+            <div class="check-group" id="r_agents"></div>
+            <label><input type="checkbox" id="r_paused" style="width:auto"> 暂停 agent 发言（真人可随时在聊天室恢复）</label>
+            <label><input type="checkbox" id="r_search" style="width:auto"> 允许上帝 agent 联网搜索（铸造室专用）</label>
+            <div style="display:flex;gap:10px;margin-top:14px">
+              <button id="saveRoom" class="primary" style="flex:1">保存</button>
+              <button id="resetRoom" style="flex:1">清空</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <h2>话题浓度复盘（embedding 粗筛 + LLM 校准）</h2>
+          <label>选择群：</label>
+          <select id="concRoom" style="width:240px"></select>
+          <div id="concLog" style="margin-top:10px;overflow-x:auto"><div class="empty">选择群查看最近消息的浓度分数</div></div>
+        </div>
+      </section>
+
+      <!-- Knowledge -->
+      <section id="panelKb" style="display:none">
+        <div class="grid">
+          <div class="panel">
+            <h2>知识库条目</h2>
+            <label>选择 Agent</label>
+            <select id="kbAgent"></select>
+            <div id="kbStats" class="hint" style="margin:8px 0"></div>
+            <div id="kbList"><div class="empty">选择左侧 agent 查看知识库</div></div>
+            <label style="margin-top:14px">测试检索</label>
+            <div class="row">
+              <input id="kbQuery" placeholder="输入一句话，看哪些知识会被命中">
+              <button id="kbSearchBtn">检索</button>
+            </div>
+            <div id="kbResults" style="margin-top:8px"></div>
+          </div>
+          <div class="panel">
+            <h2>添加知识</h2>
+            <label>标题</label>
+            <input id="kbTitle" placeholder="如：产品手册 / 人物设定">
+            <label>来源（可选，用于核对）</label>
+            <input id="kbSource" placeholder="如：https://… 或文件名">
+            <label>内容（支持 .txt / .md，或直接粘贴）</label>
+            <textarea id="kbContent" rows="8" placeholder="把资料粘贴到这里，保存时自动分块+向量化"></textarea>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button id="kbUpload" class="primary">📄 上传文件</button>
+              <button id="kbSaveText">保存文本</button>
+            </div>
+            <input type="file" id="kbFile" accept=".txt,.md" style="display:none">
+            <div id="kbUploadInfo" class="hint" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </section>
+      <!-- Forge：铸造师生成的待确认档案 -->
+      <section id="panelForge" style="display:none">
+        <div class="grid">
+          <div class="panel">
+            <h2>待确认档案</h2>
+            <p class="hint" style="margin-bottom:10px">
+              在聊天室打开【铸造室】，向<strong>铸造师</strong>描述角色或投喂资料（📎 上传文件），
+              档案生成后出现在这里。确认前可修改，确认后创建为正式 agent。
+            </p>
+            <div id="draftList"><div class="empty">加载中…</div></div>
+          </div>
+          <div class="panel">
+            <h2 id="draftDetailTitle">档案详情</h2>
+            <div id="draftDetail" class="hint">← 选择左侧档案预览</div>
+          </div>
+        </div>
+      </section>
+      <!-- Monitor -->
+      <section id="panelMonitor" style="display:none">
+        <div class="grid">
+          <div class="panel">
+            <h2>概览</h2>
+            <div id="monOverview" class="hint">加载中…</div>
+          </div>
+          <div class="panel">
+            <h2>LLM 调用统计（按用途/模型）</h2>
+            <div id="monLLM" class="hint">加载中…</div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <h2>发言决策日志（最近 50 条，点开看决策链路）</h2>
+          <div class="row" style="margin-bottom:10px">
+            <div style="flex:0 0 240px">
+              <label style="margin:0">筛选群</label>
+              <select id="monRoom"></select>
+            </div>
+          </div>
+          <div id="monDecisions"><div class="empty">加载中…</div></div>
+        </div>
+      </section>
+      <!-- Settings -->
+      <section id="panelSettings" style="display:none">
+        <div class="panel" style="max-width:640px">
+          <h2>发言参数设置（立即生效，无需重启）</h2>
+          <div id="settingsForm"><div class="empty">加载中…</div></div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <button id="saveSettings" class="primary">保存设置</button>
+            <button id="resetSettings">恢复默认</button>
+          </div>
+          <div id="settingsMsg" class="hint" style="margin-top:8px"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

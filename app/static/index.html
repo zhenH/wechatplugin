@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多人格群聊</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>🗣 多人格群聊</h1>
+    <span id="modeBadge" class="badge">…</span>
+    <span class="spacer"></span>
+    <a href="/admin.html">管理端 →</a>
+  </header>
+
+  <div class="chat-wrap">
+    <div class="chat-head">
+      <label style="margin:0">群：</label>
+      <select id="roomSelect"></select>
+      <button id="newRoomBtn" title="新建聊天群并选择角色加入">＋群</button>
+      <button id="memberBtn" title="管理当前群成员（加入/移除角色）">👥</button>
+      <span id="agentChips" class="hint"></span>
+      <span class="spacer" style="flex:1"></span>
+      <span id="stateInfo" class="hint"></span>
+      <button id="shareBtn" title="把最近 20 条消息做成图片，可复制或下载">📤 分享</button>
+      <button id="pauseBtn" title="暂停/恢复 agent 发言">⏸ 暂停</button>
+      <button id="closeBtn" class="danger" title="结束当前话题：取消待发言并清空 agent 临时记忆（记录保留）">✕ 结束话题</button>
+      <button id="clearBtn" class="danger" title="彻底清空聊天记录，agent 记忆全部删除">🗑 清空记录</button>
+    </div>
+    <div class="chat-messages" id="messages"></div>
+    <div class="typing" id="typing"></div>
+    <div class="chat-input">
+      <button id="attachBtn" title="发送文件内容（txt/md，投料用）">📎</button>
+      <input id="attachFile" type="file" accept=".txt,.md" style="display:none">
+      <input id="input" type="text" placeholder="说点什么…（@老王 / @小晴 / @阿睿 可直接点名）" autocomplete="off">
+      <button id="sendBtn" class="primary">发送</button>
+    </div>
+    <div id="quoteBar" style="display:none"></div>
+  </div>
+
+  <!-- 分享预览弹窗 -->
+  <div id="shareModal" style="display:none">
+    <div class="share-modal">
+      <h3>📤 分享最近 20 条消息</h3>
+      <img id="shareImg" alt="聊天记录图片">
+      <div class="share-actions">
+        <button id="copyImgBtn" class="primary">📋 复制图片</button>
+        <button id="downloadImgBtn">💾 下载 PNG</button>
+        <button id="closeShareBtn">关闭</button>
+      </div>
+      <div id="shareHint" class="hint"></div>
+    </div>
+  </div>
+
+  <!-- 新建群弹窗 -->
+  <div id="newRoomModal" style="display:none">
+    <div class="share-modal">
+      <h3>🏠 新建聊天群</h3>
+      <label>群名</label>
+      <input id="nr_name" placeholder="如：深夜电台群">
+      <label>选择要加入的角色（可多选）</label>
+      <div class="check-group" id="nr_agents" style="max-height:220px;overflow-y:auto"></div>
+      <div class="share-actions">
+        <button id="nrCreate" class="primary">创建并进入</button>
+        <button id="nrCancel">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 群成员管理弹窗 -->
+  <div id="memberModal" style="display:none">
+    <div class="share-modal">
+      <h3 id="memberTitle">👥 群成员管理</h3>
+      <div id="memberCurrent" class="hint" style="margin-bottom:6px"></div>
+      <label>勾选要加入的角色（取消勾选 = 移出本群）</label>
+      <div class="check-group" id="memberAgents" style="max-height:260px;overflow-y:auto"></div>
+      <div class="share-actions">
+        <button id="memberSave" class="primary">保存成员</button>
+        <button id="memberCancel">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/chat.js"></script>
+</body>
+</html>
