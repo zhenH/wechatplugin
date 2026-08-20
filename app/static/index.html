@@ -27,6 +27,15 @@
       <button id="pauseBtn" title="暂停/恢复 agent 发言">⏸ 暂停</button>
       <button id="closeBtn" class="danger" title="结束当前话题：取消待发言并清空 agent 临时记忆（记录保留）">✕ 结束话题</button>
       <button id="clearBtn" class="danger" title="彻底清空聊天记录，agent 记忆全部删除">🗑 清空记录</button>
+      <div class="more-wrap">
+        <button id="moreBtn" title="更多操作">⋯</button>
+        <div id="moreMenu" style="display:none">
+          <button id="mShare">📤 分享最近20条</button>
+          <button id="mPause">⏸ 暂停/继续</button>
+          <button id="mClose" class="danger">✕ 结束话题</button>
+          <button id="mClear" class="danger">🗑 清空记录</button>
+        </div>
+      </div>
     </div>
     <div class="chat-messages" id="messages"></div>
     <div class="typing" id="typing"></div>

@@ -515,6 +515,18 @@ $("nrCancel").addEventListener("click", () => ($("newRoomModal").style.display =
 $("memberBtn").addEventListener("click", openMemberModal);
 $("memberSave").addEventListener("click", saveMembers);
 $("memberCancel").addEventListener("click", () => ($("memberModal").style.display = "none"));
+
+// ⋯ 更多菜单（手机端使用）
+$("moreBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const menu = $("moreMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+});
+document.addEventListener("click", () => ($("moreMenu").style.display = "none"));
+$("mShare").addEventListener("click", () => { $("moreMenu").style.display = "none"; shareRecent(); });
+$("mPause").addEventListener("click", () => { $("moreMenu").style.display = "none"; togglePause(); });
+$("mClose").addEventListener("click", () => { $("moreMenu").style.display = "none"; closeConversation(); });
+$("mClear").addEventListener("click", () => { $("moreMenu").style.display = "none"; clearRoomHistory(); });
 $("shareBtn").addEventListener("click", shareRecent);
 $("copyImgBtn").addEventListener("click", copyShareImage);
 $("downloadImgBtn").addEventListener("click", downloadShareImage);
